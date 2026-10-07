@@ -346,7 +346,13 @@ def build_demo(args):
             "Events below are emitted before the source ends."
         )
         with gr.Row():
-            video = gr.Video(label="Upload a video", sources=["upload"], format="mp4")
+            bundled_sample = Path(__file__).parent / "assets/examples/soccer-broadcast.mp4"
+            video = gr.Video(
+                value=str(bundled_sample),
+                label="Video (bundled sample is ready)",
+                sources=["upload"],
+                format="mp4",
+            )
             with gr.Column():
                 rtsp = gr.Textbox(
                     label="RTSP URL (takes precedence over upload)",
@@ -363,7 +369,7 @@ def build_demo(args):
                     threshold = gr.Slider(0, 1, value=0.5, step=0.05, label="Gate threshold")
                 with gr.Row():
                     tokens = gr.Slider(4, 128, value=32, step=4, label="Max new tokens")
-                    max_segments = gr.Number(value=0, precision=0, label="Max segments (0 = unlimited)")
+                    max_segments = gr.Number(value=4, precision=0, label="Max segments (0 = unlimited)")
                 realtime = gr.Checkbox(value=True, label="Replay uploaded file at real-time speed")
                 with gr.Row():
                     start = gr.Button("Start live inference", variant="primary")
