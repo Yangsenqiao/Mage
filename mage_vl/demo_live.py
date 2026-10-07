@@ -333,6 +333,37 @@ def run_stream(
         shutil.rmtree(run_dir, ignore_errors=True)
 
 
+def make_run_callback(args):
+    """Bind server-owned settings while preserving a real generator function."""
+    def run_from_ui(
+        video_path,
+        rtsp_url,
+        segment_sec,
+        threshold,
+        max_new_tokens,
+        max_segments,
+        realtime,
+        prompt,
+    ):
+        yield from run_stream(
+            video_path,
+            rtsp_url,
+            segment_sec,
+            threshold,
+            max_new_tokens,
+            max_segments,
+            realtime,
+            prompt,
+            checkpoint=args.checkpoint,
+            revision=args.revision,
+            device=args.device,
+            cv_preinfer_bin=args.cv_preinfer_bin,
+            runner_python=args.runner_python,
+        )
+
+    return run_from_ui
+
+
 def build_demo(args):
     import gradio as gr
 
@@ -391,14 +422,7 @@ def build_demo(args):
         download = gr.File(label="Completed event JSONL", interactive=False)
 
         run_event = start.click(
-            fn=lambda *values: run_stream(
-                *values,
-                checkpoint=args.checkpoint,
-                revision=args.revision,
-                device=args.device,
-                cv_preinfer_bin=args.cv_preinfer_bin,
-                runner_python=args.runner_python,
-            ),
+            fn=make_run_callback(args),
             inputs=[video, rtsp, segment, threshold, tokens, max_segments, realtime, prompt],
             outputs=[status, confidence, latest, events, logs, download],
             concurrency_limit=1,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 import subprocess
 import sys
 import tempfile
@@ -13,6 +14,7 @@ sys.path.insert(0, str(MAGE_VL))
 
 from demo_live import (  # noqa: E402
     build_command,
+    make_run_callback,
     records_from,
     redact_source,
     run_stream,
@@ -21,6 +23,20 @@ from demo_live import (  # noqa: E402
 
 
 class LiveDemoSupervisorTest(unittest.TestCase):
+    def test_bound_ui_callback_remains_a_generator_function(self):
+        from types import SimpleNamespace
+
+        callback = make_run_callback(SimpleNamespace(
+            checkpoint="/pinned",
+            revision="abc",
+            device="cuda:0",
+            cv_preinfer_bin="/cv-preinfer",
+            runner_python="/python",
+        ))
+        self.assertTrue(inspect.isgeneratorfunction(callback))
+        result = next(callback(None, "", 4, 0.5, 8, 1, True, "describe"))
+        self.assertEqual(len(result), 6)
+
     def test_rtsp_redaction_removes_credentials_and_query(self):
         source = "rtsp://user:secret@camera.example:8554/live?token=hidden"
         redacted = redact_source(source)
