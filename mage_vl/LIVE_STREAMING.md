@@ -149,6 +149,39 @@ Use `--copy-codec` only when the source is already H.264/HEVC with sufficiently
 frequent keyframes; its boundaries follow source keyframes rather than exact wall
 clock intervals.
 
+## Local web demo
+
+Install the optional UI in a separate lightweight environment so Gradio cannot alter
+the pinned model dependencies:
+
+```bash
+python3.12 -m venv .venv-demo
+.venv-demo/bin/python -m pip install 'gradio==6.29.1'
+```
+
+Launch it on the GPU node with the isolated codec binary:
+
+```bash
+CV_PREINFER_BIN="$PWD/.venv-codec/bin/cv-preinfer" \
+CUDA_VISIBLE_DEVICES=0 .venv-demo/bin/python mage_vl/demo_live.py \
+  --checkpoint microsoft/Mage-VL \
+  --runner-python "$PWD/.venv-live/bin/python" \
+  --server-name 0.0.0.0 \
+  --server-port 7860
+```
+
+The demo prints a random password and has no public Gradio share link. Binding to
+`0.0.0.0` makes it reachable only on the cluster network; authentication remains
+required. From your workstation, forward the compute-node port:
+
+```bash
+ssh -N -L 7860:dgx-44:7860 SchoolGPUs
+```
+
+Open <http://127.0.0.1:7860>, sign in as `mage`, upload a video (or enter an RTSP
+URL), and click **Start live inference**. The event table updates as each segment is
+finalized. **Stop** terminates the model and its FFmpeg process group.
+
 ## State and position handling
 
 - `cv-preinfer` writes `src_patch_position.npy` for every completed segment.

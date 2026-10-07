@@ -28,5 +28,8 @@ dependencies = [
     "flash-attn>=2.7",
 ]
 
+[project.optional-dependencies]
+demo = ["gradio==6.29.1"]
+
 [tool.setuptools]
-py-modules = ["inference_base", "inference_streaming", "inference_live", "streaming_session"]
+py-modules = ["inference_base", "inference_streaming", "inference_live", "streaming_session", "demo_live"]

@@ -153,6 +153,7 @@ activemq-data/
 .venv
 .venv-live/
 .venv-codec/
+.venv-demo/
 env/
 venv/
 ENV/
