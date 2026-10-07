@@ -29,4 +29,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-py-modules = ["inference_base", "inference_streaming"]
+py-modules = ["inference_base", "inference_streaming", "inference_live", "streaming_session"]

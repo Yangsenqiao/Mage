@@ -193,7 +193,8 @@ A single checkpoint, `microsoft/Mage-VL`, covers every capability below.
 | Traditional H.264/HEVC codec video | `inference_base.py` | `--mode offline --video --video-backend codec --codec-engine traditional` |
 | Neural DCVC-RT codec video | `inference_base.py` | `--mode offline --video --video-backend codec --codec-engine neural` |
 | Online image / video (SGLang) | `inference_base.py` | `--mode online … --base-url <server>` |
-| Event-gated streaming commentary | `inference_streaming.py` | offline, causal segment-by-segment |
+| Offline causal replay | `inference_streaming.py` | preprocesses a complete file, then scores causal segments |
+| Incremental file / RTSP streaming | `inference_live.py` | emits per finalized segment with persistent bounded gate state |
 
 ### Installation
 
@@ -315,9 +316,12 @@ python mage_vl/inference_base.py \
 
 Use `--model`, `--max-new-tokens`, and `--api-key` to override their defaults.
 
-### Streaming inference
+### Offline causal replay
 
-Streaming inference processes a video causally in non-overlapping segments. The gate stays silent on routine content and generates a caption only when a response-worthy event is detected:
+`inference_streaming.py` processes a prerecorded video causally in non-overlapping
+segments. It prepares the complete file before scoring, so it is a replay/evaluation
+tool rather than a live camera loop. The gate stays silent on routine content and
+generates a caption only when a response-worthy event is detected:
 
 ```bash
 python mage_vl/inference_streaming.py \
@@ -334,6 +338,10 @@ python mage_vl/inference_streaming.py \
 ```
 
 The gate is trained on codec inputs, so `--video_backend codec` is the intended setting. Use `--video_backend frames` for direct frame sampling. Additional controls include `--num_frames`, `--cur_fps`, `--max_segments`, `--max_new_tokens`, `--gate_threshold`, and `--attn_impl`.
+
+For bounded-memory incremental file or RTSP ingestion, persistent cross-segment gate
+state, pinned dependencies, and codec troubleshooting, see
+[`LIVE_STREAMING.md`](LIVE_STREAMING.md).
 
 ## 📝 Citation
 

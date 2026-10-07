@@ -151,6 +151,8 @@ activemq-data/
 .env
 .envrc
 .venv
+.venv-live/
+.venv-codec/
 env/
 venv/
 ENV/
@@ -225,3 +227,5 @@ assets/ocr_*
 mage_flow/.gradio/
 .streammind_clips/
 .streammind_codec_cache/
+.mage_live/
+mage_live_events.jsonl
